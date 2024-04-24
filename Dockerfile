@@ -36,7 +36,36 @@ WORKDIR $APP_HOME
 COPY . ./
 
 # Install production dependencies.
-RUN pip install --no-cache-dir -r requirements.txt
+# RUN pip install --no-cache-dir -r requirements.txt
+
+# Install system dependencies required for Anaconda
+RUN apt-get update && apt-get install -y wget && apt-get clean
+
+# Download and install Anaconda
+RUN wget https://repo.anaconda.com/archive/Anaconda3-2024.02-1-Linux-x86_64.sh -O /anaconda.sh && \
+    /bin/bash /anaconda.sh -b -p /opt/conda && \
+    rm /anaconda.sh
+
+# Add Anaconda to PATH
+ENV PATH /opt/conda/bin:$PATH
+
+# Create the conda environment for IRnet
+COPY app/IRnet-main/IRnet_env.yaml /IRnet_env.yaml
+RUN conda env create -f /IRnet_env.yaml
+
+# Initialize conda in bash shell
+#RUN conda init && . ~/.bashrc && conda activate IRnet_env
+#RUN conda activate IRnet_env
 
 # Use the flask command to run the app to take advantage of the reload mechanism
-CMD ["flask", "run", "--host=0.0.0.0", "--port=9900"]
+#CMD ["flask", "run", "--host=0.0.0.0", "--port=9900"]
+
+# # Activate the conda environment when running the container
+SHELL ["conda", "run", "-n", "IRnet_env", "/bin/bash", "-c"]
+
+# # Install production dependencies.
+RUN pip install --no-cache-dir -r requirements.txt
+
+# # Use the flask command to run the app to take advantage of the reload mechanism
+CMD ["conda", "run", "-n", "IRnet_env", "flask", "run", "--host=0.0.0.0", "--port=9900"]
+RUN conda init && . ~/.bashrc && conda activate IRnet_env
