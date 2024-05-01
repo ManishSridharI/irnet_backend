@@ -1,45 +1,23 @@
 version: "3.8"
 
 services:
-  web:
+  backend:
     build: 
       context: .
       dockerfile: Dockerfile  # Ensure this matches the actual Dockerfile name
     container_name: "IRNet-backend"
     tty: true
     ports:
-      - "9900:9900"
+      - "127.0.0.1:9900:9900"
     environment:
-      - PORT=9900
       - FLASK_ENV=development
     volumes:
       - ./app:/app  # Mount the host's `./app` directory to the container's `/app` directory
     networks:
-      - default
+      # - default
       - kbc-net
 
 networks:
   kbc-net:
     external: true
 
-
-# version: "3.8"
-
-# services:
-#   web:
-#     build: 
-#       context: .
-#       dockerfile: Dockerfile  # Ensure this matches the actual Dockerfile name
-#     container_name: "IRNet-backend"
-#     tty: true
-#     ports:
-#       - "9900:9900"
-#     environment:
-#       - PORT=9900
-#     networks:
-#       - default
-#       - kbc-net
-
-# networks:
-#   kbc-net:
-#     external: true

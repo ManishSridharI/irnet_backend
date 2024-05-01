@@ -42,15 +42,19 @@ COPY . ./
 RUN apt-get update && apt-get install -y wget && apt-get clean
 
 # Download and install Anaconda
-RUN wget https://repo.anaconda.com/archive/Anaconda3-2024.02-1-Linux-x86_64.sh -O /anaconda.sh && \
-    /bin/bash /anaconda.sh -b -p /opt/conda && \
-    rm /anaconda.sh
+# RUN wget https://repo.anaconda.com/archive/Anaconda3-2024.02-1-Linux-x86_64.sh -O /anaconda.sh && \
+#     /bin/bash /anaconda.sh -b -p /opt/conda && \
+#     rm /anaconda.sh
 
+COPY app/Anaconda3-2024.02-1-Linux-x86_64.sh /anaconda.sh
+
+RUN /bin/bash /anaconda.sh -b -p /opt/conda && \
+    rm /anaconda.sh
 # Add Anaconda to PATH
 ENV PATH /opt/conda/bin:$PATH
 
 # Create the conda environment for IRnet
-COPY app/IRnet-main/IRnet_env.yaml /IRnet_env.yaml
+COPY app/IRnet_main/IRnet_env.yaml /IRnet_env.yaml
 RUN conda env create -f /IRnet_env.yaml
 
 # Initialize conda in bash shell

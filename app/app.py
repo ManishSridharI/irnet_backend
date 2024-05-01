@@ -6,14 +6,25 @@ from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS  # Import CORS
 import mysql.connector
 from flaskext.mysql import MySQL
-import subprocess
+#import subprocess
 from IRnet_main import predict
 #from werkzeug.utils import secure_filename
 
 #import json
+# Define allowed hosts
+ALLOWED_HOSTS = [
+    'http://trbil.missouri.edu', 
+    'http://digbio-g2pdeep.rnet.missouri.edu',
+    'http://digbio-g2pdeep.rnet.missouri.edu:9090',
+    'http://digbio-g2pdeep.rnet.missouri.edu:9090/',
+    'http://g2pdeep.org',
+    'http://127.0.0.1', 
+    'http://127.0.0.1:9090/',
+]
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:9090"}})
+
 
 # db_config = {
 #     'host': 'digbio-db1.rnet.missouri.edu',
@@ -313,7 +324,7 @@ def get_edge_results(job_id, patient_id):
         return jsonify({"error": str(e)}), 500    
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 9900)))
+    app.run(debug=True, host="127.0.0.1", port=int(os.environ.get("PORT", 9900)))
     
 # from flask import Flask, send_from_directory
 
